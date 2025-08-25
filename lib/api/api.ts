@@ -10,7 +10,7 @@
 
 import axios from "axios";
 
-export const api = axios.create({
+export const axiosInstance = axios.create({
   baseURL: "https://notehub-public.goit.study/api",
   withCredentials: true,
 });
