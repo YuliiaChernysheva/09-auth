@@ -57,10 +57,10 @@ export const createNote = async (data: NewNoteData): Promise<Note> => {
   return response.data;
 };
 
-export type SignUpRequest = {
+export interface SignUpRequest {
   email: string;
   password: string;
-};
+}
 
 export type SignInRequest = {
   email: string;
@@ -75,4 +75,20 @@ export const signUp = async (data: SignUpRequest): Promise<User> => {
 export const signIn = async (data: SignInRequest): Promise<User> => {
   const response = await axiosInstance.post<User>("/auth/login", data);
   return response.data;
+};
+
+export type CheckSessionResponse = {
+  success: boolean;
+};
+
+export const checkSession = async () => {
+  const response = await axiosInstance.get<CheckSessionResponse>(
+    "/auth/session"
+  );
+  return response.data.success;
+};
+
+export const getMe = async () => {
+  const { data } = await axiosInstance.get<User>("/users/me");
+  return data;
 };

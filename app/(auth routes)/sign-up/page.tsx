@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signUp } from "@/lib/api/clientApi";
 import css from "./SignUpPage.module.css";
+import { axiosInstance } from "@/lib/api/api";
 
 const SignUp = () => {
   const [error, setError] = useState("");
@@ -15,13 +15,17 @@ const SignUp = () => {
     const password = formData.get("password") as string;
 
     try {
-      await signUp({ email, password });
+      await axiosInstance.post(
+        "https://notehub-public.goit.study/api/auth/register",
+        { email, password }
+      );
+      alert("Registration successful!");
       router.push("/profile");
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response?.status === 409) {
+        alert("A user with this email or username already exists.");
       } else {
-        setError("Registration failed");
+        alert("An error occurred, please try again later.");
       }
     }
   };
