@@ -9,7 +9,7 @@ type Props = {
 };
 
 const AuthProvider = ({ children }: Props) => {
-  const setAuth = useAuthStore((state) => state.setAuth);
+  const setUser = useAuthStore((state) => state.setUser);
   const clearAuth = useAuthStore((state) => state.clearAuth);
 
   useEffect(() => {
@@ -17,13 +17,13 @@ const AuthProvider = ({ children }: Props) => {
       const res = await checkSession();
       if (res) {
         const user = await getMe();
-        setAuth(user);
+        if (user) setUser(user);
       } else {
         clearAuth();
       }
     };
     fetchSession();
-  }, [clearAuth, setAuth]);
+  }, [clearAuth, setUser]);
 
   //
   return children;

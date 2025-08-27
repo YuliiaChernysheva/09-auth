@@ -1,11 +1,23 @@
 "use client";
 
-import React from "react";
 import css from "./AuthNavigation.module.css";
 import Link from "next/link";
+import { useAuthStore } from "@/lib/store/authStore";
+import { useRouter } from "next/navigation";
+import { logOut } from "@/lib/api/clientApi";
 
 const AuthNavigation = () => {
-  return (
+  const { isAuth, user } = useAuthStore();
+  const router = useRouter();
+  const clearAuth = useAuthStore((state) => state.clearAuth);
+
+  const handleLogout = async () => {
+    await logOut();
+    clearAuth();
+    router.push("/sign-in");
+  };
+
+  return isAuth ? (
     <>
       <li className={css.navigationItem}>
         <Link href="/profile" prefetch={false} className={css.navigationLink}>
@@ -14,10 +26,14 @@ const AuthNavigation = () => {
       </li>
 
       <li className={css.navigationItem}>
-        <p className={css.userEmail}>User email</p>
-        <button className={css.logoutButton}>Logout</button>
+        <p className={css.userEmail}>{user?.email}</p>
+        <button onClick={handleLogout} className={css.logoutButton}>
+          Logout
+        </button>
       </li>
-
+    </>
+  ) : (
+    <>
       <li className={css.navigationItem}>
         <Link href="/sign-in" prefetch={false} className={css.navigationLink}>
           Login

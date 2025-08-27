@@ -4,9 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import css from "./NoteForm.module.css";
 import type { Tag } from "@/types/note";
-import { addNote } from "@/lib/api/api";
 import { useNoteDraft } from "@/lib/store/noteStore";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { addNote } from "@/lib/api/clientApi";
 
 const NoteForm = () => {
   const router = useRouter();
@@ -16,6 +16,7 @@ const NoteForm = () => {
 
   const mutation = useMutation({
     mutationFn: (newNote: typeof draft) => addNote(newNote),
+
     onSuccess: () => {
       clearDraft();
       queryClient.invalidateQueries({ queryKey: ["notes"] });

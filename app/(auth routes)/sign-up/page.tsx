@@ -3,22 +3,28 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import css from "./SignUpPage.module.css";
-import { axiosInstance } from "@/lib/api/api";
+import axios from "axios";
+import { SignInRequest, signUp } from "@/lib/api/clientApi";
+import { useAuthStore } from "@/lib/store/authStore";
 
 const SignUp = () => {
   const [error, setError] = useState("");
   const router = useRouter();
+  const setAuth = useAuthStore((state) => state.setUser);
 
   const handleSignUp = async (formData: FormData) => {
     setError("");
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
+    const data = Object.fromEntries(formData) as SignInRequest;
+    const user = await signUp(data);
+    if (user) {
+      setAuth(user);
+      router.push("/profile");
+    }
 
     try {
-      await axiosInstance.post(
-        "https://notehub-public.goit.study/api/auth/register",
-        { email, password }
-      );
+      await signUp({ email, password });
       alert("Registration successful!");
       router.push("/profile");
     } catch (error: unknown) {

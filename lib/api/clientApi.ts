@@ -37,6 +37,29 @@ export const fetchNotes = async ({
   return response.data;
 };
 
+export interface SignUpRequest {
+  email: string;
+  password: string;
+}
+
+export type SignInRequest = {
+  email: string;
+  password: string;
+};
+
+export type CheckSessionResponse = {
+  success: boolean;
+};
+
+export type UpdateMeRequest = {
+  username: string;
+};
+
+export const fetchNoteById = async (id: string): Promise<Note> => {
+  const response = await axiosInstance.get<Note>(`/notes/${id}`);
+  return response.data;
+};
+
 export const addNote = async (noteData: NewNoteData): Promise<Note> => {
   const response = await axiosInstance.post<Note>("/notes", noteData);
   return response.data;
@@ -47,24 +70,9 @@ export const deleteNote = async (noteId: string): Promise<Note> => {
   return response.data;
 };
 
-export const fetchNoteById = async (id: string): Promise<Note> => {
-  const response = await axiosInstance.get<Note>(`/notes/${id}`);
-  return response.data;
-};
-
 export const createNote = async (data: NewNoteData): Promise<Note> => {
   const response = await axiosInstance.post<Note>(`/notes/`, data);
   return response.data;
-};
-
-export interface SignUpRequest {
-  email: string;
-  password: string;
-}
-
-export type SignInRequest = {
-  email: string;
-  password: string;
 };
 
 export const signUp = async (data: SignUpRequest): Promise<User> => {
@@ -77,10 +85,6 @@ export const signIn = async (data: SignInRequest): Promise<User> => {
   return response.data;
 };
 
-export type CheckSessionResponse = {
-  success: boolean;
-};
-
 export const checkSession = async () => {
   const response = await axiosInstance.get<CheckSessionResponse>(
     "/auth/session"
@@ -89,6 +93,16 @@ export const checkSession = async () => {
 };
 
 export const getMe = async () => {
-  const { data } = await axiosInstance.get<User>("/users/me");
-  return data;
+  const response = await axiosInstance.get<User>("/users/me");
+  return response.data;
+};
+
+export const updateMe = async (payload: UpdateMeRequest) => {
+  const response = await axiosInstance.patch<User>("/users/me", payload);
+  return response.data;
+};
+
+export const logOut = async () => {
+  const response = await axiosInstance.post(`/auth/logout`);
+  return response.data;
 };

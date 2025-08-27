@@ -2,29 +2,44 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signIn } from "@/lib/api/clientApi";
+import { signIn, SignInRequest } from "@/lib/api/clientApi";
 import css from "./SignInPage.module.css";
+import { useAuthStore } from "@/lib/store/authStore";
+import axios from "axios";
 
 const SignIn = () => {
   const [error, setError] = useState("");
   const router = useRouter();
+  const setAuth = useAuthStore((state) => state.setUser);
 
   const handleSignIn = async (formData: FormData) => {
     setError("");
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
+    // const email = formData.get("email") as string;
+    // const password = formData.get("password") as string;
+    const data = Object.fromEntries(formData) as SignInRequest;
 
     try {
-      await signIn({ email, password });
-      router.push("/profile");
-    } catch (err) {
-      if (typeof err === "object" && err !== null && "message" in err) {
-        setError(String((err as { message: string }).message));
+      const user = await signIn(data);
+
+      if (user) {
+        setAuth(user);
+        router.push("/profile");
       } else {
-        setError("Login failed");
+        setError("Authorization failed. Please check your credentials.");
+      }
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        if (err.response?.status === 401) {
+          setError("Incorrect email or password. Please try again.");
+        } else {
+          setError("An error occurred. Please try again later.");
+        }
+      } else {
+        setError("Unexpected error occurred.");
       }
     }
   };
+
   return (
     <main className={css.mainContent}>
       <form action={handleSignIn} className={css.form}>
